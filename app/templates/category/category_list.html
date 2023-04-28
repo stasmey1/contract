@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+{% for category in category_list %}
+
+<a href="{{ url_for('category', id = category.id)}}">{{category.name}}</a>
+<br>
+{% endfor %}
+{% endblock content %}

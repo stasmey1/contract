@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<h1>Добавить контрагента</h1>
+
+
+
+<form action="" method='post' enctype="multipart/form-data">
+    {{ form.csrf_token }}
+
+    <p>{{form.name.label}} - {{form.name}}</p>
+    <p>{{form.representative.label}} - {{form.representative}}</p>
+    <p>{{form.nds.label}} - {{form.nds}}</p>
+    <p>{{form.nds_percent.label}} - {{form.nds_percent}}</p>
+    <p>{{form.avatar_file_path.label}} - {{form.avatar_file_path}}</p>
+    <p>{{form.comment.label}} - {{form.comment}}</p>
+    {{form.submit}}
+</form>
+
+
+{% endblock content %}

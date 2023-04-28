@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<h1>{{user.name}}</h1>
+
+<div class="col">
+    <h2>Посты <a href="{{url_for('add_post')}}">+</a></h2>
+    {% for post in user.posts %}
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <a href="{{url_for('post', id=post.id)}}">
+                    <img src="{{ url_for('static', filename=post.get_image_path()) }}"
+                         class="img-fluid rounded-start" alt="..."></a>
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title"><a href="{{url_for('post', id=post.id)}}">{{post.title}}</a></h5>
+                    <p class="card-text">{{post.text|truncate(300)}}</p>
+                    <p class="card-text"><small class="text-muted">{{post.created}}</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+{% endblock content %}

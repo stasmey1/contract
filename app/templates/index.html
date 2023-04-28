@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+
+<div class="row">
+    {% for category in category_list %}
+    <div class="col-4">
+        <a href="{{url_for('category', id = category.id)}}">
+            <div class="card">
+                <img src="..." class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h4>{{category.name}}</h4>
+                </div>
+            </div>
+        </a>
+        {% for contract in category.contracts %}
+        <a href="{{ url_for('contract', id = contract.id)}}">
+            <div class="card mt-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-1">
+                            {{contract.number}}
+                        </div>
+                        <div class="col">
+                            {{contract.partner.name}}
+                        </div>
+                        <div class="col-4">
+                            {{contract.amount_money}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+
+    </div>
+    {% endfor %}
+</div>
+
+
+{% endblock content %}

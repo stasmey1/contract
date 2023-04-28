@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+{% for contract in category.contracts %}
+<p>{{contract.id}} - {{contract.amount_money}}</p>
+{% endfor %}
+{% endblock content %}
