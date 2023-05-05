@@ -5,17 +5,13 @@ from flask import (
     url_for,
 )
 
-from .forms import PartnerForm, CategoryForm, ContractAdd
-from .models import Partner, Category, Contract
-from .constants import get_my_company, NDSRate
+from .forms import PartnerForm, CategoryForm
+from .models import Partner, Category
 
 
 @app.route('/')
 def index():
-    category_list = Category.query.all()
-    return render_template('index.html',
-                           SAB1=get_my_company(),
-                           category_list=category_list)
+    return render_template('index.html', category_list=Category.query.all())
 
 
 @app.route('/category_form', methods=['POST', 'GET'])

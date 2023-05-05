@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if form.errors %}
+{% for error in form.errors.values() %}
+<p style="color: red">{{ ''.join(error) }}</p>
+{% endfor %}
+{% endif %}
+
+
+
+<form action="" method='post'>
+    {{ form.csrf_token }}
+    <p>{{form.number.label}} - {{form.number}}</p>
+    <p>{{form.data_start.label}} - {{form.data_start}}</p>
+    <p>{{form.data_finish.label}} - {{form.data_finish}}</p>
+    <p>{{form.auto_renewal.label}} - {{form.auto_renewal}}</p>
+    <p>{{form.tender.label}} - {{form.tender}}</p>
+    <p>{{form.amount_money.label}} - {{form.amount_money}}</p>
+    <p>{{form.nds.label}} - {{form.nds}}</p>
+    <p>{{form.nds_percent.label}} - {{form.nds_percent}}</p>
+    <p>{{form.comment.label}} - {{form.comment}}</p>
+    {{form.submit}}
+</form>
+
+
+
+{% endblock content %}

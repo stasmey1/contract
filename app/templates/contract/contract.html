@@ -20,6 +20,35 @@
                 <li class="list-group-item">Дополнительные соглашения - {{contract.additional_agreements_exists}}</li>
             </ul>
         </div>
+
+        <div class="col mt-2">
+            <a class="btn btn-danger" href="{{ url_for('contract_delete', id = contract.id) }}"
+               role="button">Удалить</a>
+            <a class="btn btn-light" href="{{ url_for('contract_edit', id = contract.id) }}" role="button">Изменить
+                данные</a>
+        </div>
+        <div class="col mt-2">
+            <a class="btn btn-light" href="{{ url_for('contract_edit_file', id = contract.id) }}" role="button">Изменить
+                файл</a>
+            <a class="btn btn-light" href="{{ url_for('download_file', number = contract.number) }}"
+               role="button">Скачать</a>
+        </div>
+
+        <a class="btn btn-light" href="{{ url_for('additional_agreement_add', contract_id = contract.id) }}"
+           role="button">Добавить доп. соглашение</a>
+
+        <div class="col">
+            {% if contract.additional_agreements %}
+            {% for dop in contract.additional_agreements %}
+            {{dop.data}} <a
+                href="{{ url_for('download_additional_agreement_file', contract_id = contract.id, id = dop.id) }}">скачать</a>
+            <a href="{{ url_for('additional_agreement_delete', contract_id = contract.id, id = dop.id) }}">удалить</a>
+
+            {% endfor%}
+            {% endif %}
+        </div>
+
+
     </div>
 
 
@@ -35,7 +64,8 @@
             </div>
 
             <div class="col">
-                <div class="progress" style="height: 30px;" role="progressbar" aria-label="Example with label" aria-valuenow="25"
+                <div class="progress" style="height: 30px;" role="progressbar" aria-label="Example with label"
+                     aria-valuenow="25"
                      aria-valuemin="0"
                      aria-valuemax="100">
                     <div class="progress-bar" style="width: {{contract.get_percentage()}}%">
@@ -57,7 +87,8 @@
             </div>
 
             <div class="col mt-1">
-                <div class="progress" style="height: 30px;" role="progressbar" aria-label="Example with label" aria-valuenow="25"
+                <div class="progress" style="height: 30px;" role="progressbar" aria-label="Example with label"
+                     aria-valuenow="25"
                      aria-valuemin="0"
                      aria-valuemax="100">
                     <div class="progress-bar" style="width: {{contract.get_duration_percent()}}%">

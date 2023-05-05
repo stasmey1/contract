@@ -35,22 +35,10 @@ class CategoryForm(FlaskForm):
     submit = SubmitField('Отправить')
 
 
-class ContractAdd(FlaskForm):
-    category_id = SelectField('Категория',
-                              choices=[_.name for _ in get_models_for_form(app, Category)],
-                              validators=[DataRequired(), ])
-    partner_id = SelectField('Категория',
-                             choices=[_.name for _ in get_models_for_form(app, Partner)],
-                             validators=[DataRequired(), ])
-    number = StringField('Номер',
-                         validators=[DataRequired(), ])
-    file_path = FileField('Файл',
-                          validators=[DataRequired(), ])
-    data_start = DateField('Дата начала',
-                           validators=[DataRequired(), ])
-    data_finish = DateField('Дата окончания',
-                            validators=[DataRequired(), ])
-
+class ContractFormMixin(FlaskForm):
+    number = StringField('Номер', validators=[DataRequired(), ])
+    data_start = DateField('Дата начала', validators=[DataRequired(), ])
+    data_finish = DateField('Дата окончания', validators=[DataRequired(), ])
     auto_renewal = BooleanField('Автопродление')
     tender = BooleanField('Тендерный')
     amount_money = FloatField('Сумма договора')
@@ -62,7 +50,33 @@ class ContractAdd(FlaskForm):
     submit = SubmitField('Отправить')
 
 
+class ContractAdd(ContractFormMixin):
+    category_id = SelectField('Категория',
+                              choices=[_.name for _ in get_models_for_form(app, Category)],
+                              validators=[DataRequired(), ])
+    partner_id = SelectField('Категория',
+                             choices=[_.name for _ in get_models_for_form(app, Partner)],
+                             validators=[DataRequired(), ])
+    file_path = FileField('Файл', validators=[DataRequired(), ])
+
+
+class ContractEditInfo(ContractFormMixin):
+    pass
+
+
+class ContractEditFile(FlaskForm):
+    file_path = FileField('Файл', validators=[DataRequired(), ])
+    submit = SubmitField('Отправить')
+
+
 class TransactionMoneyForm(FlaskForm):
     justification = StringField('Обоснование')
-    amount_money = FloatField('Сумма',validators=[DataRequired(), ])
+    amount_money = FloatField('Сумма', validators=[DataRequired(), ])
+    submit = SubmitField('Отправить')
+
+
+class AdditionalAgreementForm(FlaskForm):
+    file_path = FileField('Файл', validators=[DataRequired(), ])
+    data = DateField('Дата')
+    comment = StringField('Комментарий')
     submit = SubmitField('Отправить')
