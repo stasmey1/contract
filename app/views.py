@@ -57,3 +57,8 @@ def partner_form():
 @app.route('/partner/<id>')
 def partner(id):
     return render_template('partner/partner.html', partner=Partner.query.get(id))
+
+
+@app.route('/partner_list')
+def partner_list():
+    return render_template('partner/partner_list.html', partners=Partner.query.all())

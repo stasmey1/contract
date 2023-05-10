@@ -1,7 +1,7 @@
 import datetime
+import shutil
 from enum import Enum
 from pathlib import Path
-import shutil
 
 from werkzeug.utils import secure_filename
 
@@ -42,6 +42,7 @@ class Partner(CompanyMixin, db.Model):
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False, unique=True)
+    image_url = db.Column(db.String(225))
 
     def __repr__(self):
         return self.name
@@ -108,6 +109,9 @@ class Contract(db.Model):
         else:
             raise ValueError('Transactions exceeds the remaining money under the contract')
 
+    def delete_transaction(self, transaction):
+        self.waste_money += transaction.amount_money
+
     def get_remaining_duration(self) -> int:
         '''получить продолжительность контаркта в днях'''
         delta = self.data_finish - self.data_start
@@ -119,9 +123,12 @@ class Contract(db.Model):
 
     def get_duration_percent(self) -> int:
         '''получить процент завершенности продолжительности контракта'''
-        current_duration = self.get_current_duration()
-        remaining_duration = self.get_remaining_duration()
-        return int(current_duration / remaining_duration * 100)
+        duration_percent = int(self.get_current_duration() / self.get_remaining_duration() * 100)
+        return duration_percent if duration_percent <= 100 else 100
+
+    def update_fields(self):
+        self.current_status = True if self.data_finish > datetime.date.today() else False
+        self.additional_agreements_exists = False if not self.additional_agreements else True
 
     def save_contract_file(self, file):
         folder = Path('contract_files', self.number)
@@ -166,7 +173,8 @@ class AdditionalAgreement(db.Model):
     file_path = db.Column(db.String(225), nullable=False)
     contract_id = db.Column(db.Integer, db.ForeignKey('contract.id'))
     additional_agreement = db.relationship('Contract',
-                                           backref=db.backref('additional_agreements', cascade='all, delete'))
+                                           backref=db.backref('additional_agreements',
+                                                              cascade='all, delete'))
     comment = db.Column(db.String(225))
 
     def __repr__(self):

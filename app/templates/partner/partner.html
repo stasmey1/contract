@@ -3,23 +3,29 @@
 
 {% block content %}
 <h1>{{partner.name}}</h1>
-{% for contract in partner.contracts %}
-<a href="{{ url_for('contract', id = contract.id)}}">
-    <div class="card mt-3">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-1">
-                    {{contract.number}}
-                </div>
-                <div class="col">
-                    {{contract.partner.name}}
-                </div>
-                <div class="col-4">
-                    {{contract.amount_money}}
+<div class="row">
+    {% for contract in partner.contracts %}
+    <div class="col-3">
+        <a href="{{ url_for('contract', id = contract.id)}}">
+            <div class="card mt-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-3">
+                            {{contract.number}}
+                        </div>
+                        <div class="col">
+                            {{contract.partner.name}}
+                        </div>
+                        <div class="col-4">
+                            {{contract.amount_money}}
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
-</a>
-{% endfor %}
+    {% endfor %}
+</div>
+
+
 {% endblock content %}

@@ -54,7 +54,7 @@ class ContractAdd(ContractFormMixin):
     category_id = SelectField('Категория',
                               choices=[_.name for _ in get_models_for_form(app, Category)],
                               validators=[DataRequired(), ])
-    partner_id = SelectField('Категория',
+    partner_id = SelectField('Контрагент',
                              choices=[_.name for _ in get_models_for_form(app, Partner)],
                              validators=[DataRequired(), ])
     file_path = FileField('Файл', validators=[DataRequired(), ])

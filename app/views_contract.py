@@ -6,6 +6,7 @@ from sqlalchemy import text
 from app import app, db
 from app.forms import ContractAdd, TransactionMoneyForm, ContractEditInfo, ContractEditFile, AdditionalAgreementForm
 from app.models import Partner, Category, Contract, TransactionMoney, AdditionalAgreement
+from .template_utils import template_bool_color
 from .utils import validate_file
 
 
@@ -72,6 +73,15 @@ def contract_edit(id):
     return render_template('contract/contract_edit.html', form=form)
 
 
+@app.route('/contract_check/<id>')
+def contract_check(id):
+    contract = Contract.query.get(id)
+    contract.update_fields()
+    db.session.add(contract)
+    db.session.commit()
+    return redirect(url_for('contract', id=contract.id))
+
+
 @app.route('/contract_edit_file/<id>', methods=['POST', 'GET'])
 def contract_edit_file(id):
     contract = Contract.query.get(id)
@@ -108,7 +118,8 @@ def contract(id):
     return render_template('contract/contract.html',
                            contract=contract,
                            form=TransactionMoneyForm(),
-                           transaction_list=transaction_list)
+                           transaction_list=transaction_list,
+                           template_bool_color=template_bool_color)
 
 
 @app.route('/download_file/<number>')
@@ -139,22 +150,35 @@ def add_transaction(id):
     return redirect(url_for('contract', id=contract.id))
 
 
+@app.route('/contract/<id>/delete_transaction/<trans_id>')
+def delete_transaction(id, trans_id):
+    contract = Contract.query.get(id)
+    transaction = TransactionMoney.query.get(trans_id)
+    contract.delete_transaction(transaction)
+    db.session.delete(transaction)
+    db.session.add(contract)
+    db.session.commit()
+    return redirect(url_for('contract', id=contract.id))
+
+
 @app.route('/<contract_id>/additional_agreement_add', methods=['POST', 'GET'])
 def additional_agreement_add(contract_id):
     form = AdditionalAgreementForm()
+    contract = Contract.query.get(contract_id)
     if form.validate_on_submit():
         file = validate_file(form.file_path.data)
         additional_agreement = AdditionalAgreement(file_path=file.filename,
                                                    data=form.data.data,
                                                    contract_id=Contract.query.get(contract_id).id,
                                                    comment=form.comment.data)
-
         db.session.add(additional_agreement)
         db.session.commit()
         """save file"""
         additional_agreement.save_file(file)
+        """update contract"""
+        contract.additional_agreements_exists = True
 
-        db.session.add(additional_agreement)
+        db.session.add(additional_agreement, contract)
         db.session.commit()
         return redirect(url_for('contract', id=contract_id))
 
@@ -168,13 +192,19 @@ def additional_agreement_delete(contract_id, id):
         additional_agreement.delete_file()
         db.session.delete(additional_agreement)
         db.session.commit()
+
+        contract = Contract.query.get(contract_id)
+        contract.update_fields()
+        db.session.add(contract)
+        db.session.commit()
+
         return redirect(url_for('contract', id=contract_id))
 
     return render_template('contract/contract_delete.html')
 
 
 @app.route('/<contract_id>/download_additional_agreement_file/<id>')
-def download_additional_agreement_file(contract_id,id):
+def download_additional_agreement_file(contract_id, id):
     additional_agreement = AdditionalAgreement.query.get(id)
     contract = Contract.query.get(contract_id)
     directory = Path(Path(__file__).parent.parent, 'contract_files', contract.number)

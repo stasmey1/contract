@@ -1,6 +1,8 @@
 from enum import Enum
 from pathlib import Path
 
+from werkzeug.utils import secure_filename
+
 
 def get_models_for_form(app, model):
     with app.app_context():

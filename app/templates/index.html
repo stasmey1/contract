@@ -8,12 +8,22 @@
     {% for category in category_list %}
     <div class="col-4">
         <a href="{{url_for('category', id = category.id)}}">
-            <div class="card">
-                <img src="..." class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h4>{{category.name}}</h4>
+
+
+            <div class="card mb-3 mt-3">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src={{category.image_url}} class="img-fluid rounded-start m-2" style="height:100px" alt="...">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{category.name}}</h5>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+
         </a>
         {% for contract in category.contracts %}
         <a href="{{ url_for('contract', id = contract.id)}}">

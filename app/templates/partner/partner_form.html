@@ -4,19 +4,76 @@
 {% block content %}
 <h1>Добавить контрагента</h1>
 
+<div class="col-6">
+    <form action="" method='post' enctype="multipart/form-data">
+        {{ form.csrf_token }}
+
+        <div class="row mt-2">
+            <div class="col-4">
+                {{form.name.label(class="form-label")}}
+            </div>
+            <div class="col">
+                {{form.name(class="form-control")}}
+            </div>
+        </div>
 
 
-<form action="" method='post' enctype="multipart/form-data">
-    {{ form.csrf_token }}
-
-    <p>{{form.name.label}} - {{form.name}}</p>
-    <p>{{form.representative.label}} - {{form.representative}}</p>
-    <p>{{form.nds.label}} - {{form.nds}}</p>
-    <p>{{form.nds_percent.label}} - {{form.nds_percent}}</p>
-    <p>{{form.avatar_file_path.label}} - {{form.avatar_file_path}}</p>
-    <p>{{form.comment.label}} - {{form.comment}}</p>
-    {{form.submit}}
-</form>
+        <div class="row mt-2">
+            <div class="col-4">
+                {{form.representative.label(class="form-label")}}
+            </div>
+            <div class="col">
+                {{form.representative(class="form-control")}}
+            </div>
+        </div>
 
 
+        <div class="row mt-2">
+            <div class="col-4">
+                {{form.nds.label(class="form-label")}}
+            </div>
+            <div class="col">
+                {{form.nds(class="form-checkbox")}}
+            </div>
+        </div>
+
+
+        <div class="row mt-2">
+            <div class="col-4">
+                {{form.nds_percent.label(class="form-label")}}
+            </div>
+            <div class="col mt-2">
+                {{form.nds_percent(class="form-control")}}
+            </div>
+        </div>
+
+
+        <div class="row mt-2">
+            <div class="col-4">
+                {{form.avatar_file_path.label(class="form-label")}}
+            </div>
+            <div class="col">
+                {{form.avatar_file_path(class="form-control")}}
+            </div>
+        </div>
+
+
+        <div class="row mt-2">
+            <div class="col-4">
+                {{form.comment.label(class="form-label")}}
+            </div>
+            <div class="col">
+                {{form.comment(class="form-control")}}
+            </div>
+        </div>
+
+
+        <div class="row mt-2">
+            <div class="col-4">
+                {{form.submit(class="btn btn-primary")}}
+            </div>
+        </div>
+    </form>
+
+</div>
 {% endblock content %}
