@@ -1,7 +1,4 @@
-from enum import Enum
 from pathlib import Path
-
-from werkzeug.utils import secure_filename
 
 
 def get_models_for_form(app, model):
@@ -13,3 +10,4 @@ def validate_file(file):
     if not Path(file.filename).suffix in ('.doc', '.docx', '.pdf'):
         raise ValueError('allowed_extensions: doc, docx, pdf')
     return file
+

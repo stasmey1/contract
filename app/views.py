@@ -1,9 +1,5 @@
 from app import app, db
-from flask import (
-    render_template,
-    redirect,
-    url_for,
-)
+from flask import render_template, redirect, url_for
 
 from .forms import PartnerForm, CategoryForm
 from .models import Partner, Category

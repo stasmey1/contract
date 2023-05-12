@@ -1,18 +1,14 @@
 from app import app
+
 from flask_wtf import FlaskForm
+from wtforms.validators import DataRequired
 from wtforms import (
     StringField,
     SelectField,
     SubmitField,
     BooleanField,
     FileField,
-    DateField, FloatField, IntegerField, DateTimeField,
-)
-from wtforms.validators import (
-    DataRequired,
-    Email,
-    EqualTo,
-    Length, ValidationError,
+    DateField, FloatField
 )
 
 from .constants import NDSRate

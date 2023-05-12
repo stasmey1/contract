@@ -1,9 +1,5 @@
 import datetime
-import shutil
 from enum import Enum
-from pathlib import Path
-
-from werkzeug.utils import secure_filename
 
 from app import app, db
 
@@ -46,10 +42,6 @@ class Category(db.Model):
 
     def __repr__(self):
         return self.name
-
-
-def validate_file(file):
-    return Path(file.filename).suffix in ('.doc', '.docx', '.pdf')
 
 
 class Contract(db.Model):
@@ -130,42 +122,6 @@ class Contract(db.Model):
         self.current_status = True if self.data_finish > datetime.date.today() else False
         self.additional_agreements_exists = False if not self.additional_agreements else True
 
-    def save_contract_file(self, file):
-        folder = Path('contract_files', self.number)
-        if validate_file(file):
-            if not Path.exists(folder):
-                folder.mkdir(parents=True, exist_ok=True)
-            filename = secure_filename(file.filename)
-            file.save(Path(folder, filename))
-
-            new_name = f"{self.number}{Path(filename).suffix}"
-            Path(folder, filename).rename(Path(folder, new_name))
-
-            self.file_path = new_name
-
-    def update_file_path(self, file):
-        suffix = Path(file.filename).suffix
-        self.file_path = self.number + suffix
-
-    def delete_contract_file(self):
-        folder = Path('contract_files', self.number)
-        if Path.exists(folder):
-            shutil.rmtree(folder)
-
-
-class TransactionMoney(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    justification = db.Column(db.String(225))
-    moment_of_payment = db.Column(db.DateTime, default=datetime.datetime.now().strftime("%d.%m.%Y, %H:%M"),
-                                  nullable=False)
-    amount_money = db.Column(db.Float, nullable=False)
-    contract_id = db.Column(db.Integer, db.ForeignKey('contract.id'))
-    transactions = db.relationship('Contract', backref=db.backref('transactions', cascade="all, delete"))
-    done = db.Column(db.Boolean, default=False)
-
-    def __repr__(self):
-        return f'{self.data} - {self.amount_money}'
-
 
 class AdditionalAgreement(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -180,21 +136,16 @@ class AdditionalAgreement(db.Model):
     def __repr__(self):
         return self.id
 
-    def save_file(self, file):
-        contract = Contract.query.get(self.contract_id)
-        directory = Path('contract_files', contract.number)
-        filename = secure_filename(file.filename)
-        file.save(Path(directory, filename))
-        """rename file"""
-        new_name = f"{contract.number}_dop_{self.id}{Path(filename).suffix}"
-        new_file = Path(directory, filename)
-        new_file.rename(Path(directory, new_name))
-        """update file_path"""
-        self.file_path = new_name
 
-    def delete_file(self):
-        contract = Contract.query.get(self.contract_id)
-        directory = Path(Path(__file__).parent.parent, 'contract_files', contract.number)
-        file = Path(directory, self.file_path)
-        if Path.exists(file):
-            file.unlink()
+class TransactionMoney(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    justification = db.Column(db.String(225))
+    moment_of_payment = db.Column(db.DateTime, default=datetime.datetime.now().strftime("%d.%m.%Y, %H:%M"),
+                                  nullable=False)
+    amount_money = db.Column(db.Float, nullable=False)
+    contract_id = db.Column(db.Integer, db.ForeignKey('contract.id'))
+    transactions = db.relationship('Contract', backref=db.backref('transactions', cascade="all, delete"))
+    done = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        return f'{self.data} - {self.amount_money}'
