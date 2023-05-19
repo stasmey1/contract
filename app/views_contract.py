@@ -1,22 +1,30 @@
-from pathlib import Path
-
 from flask import render_template, redirect, url_for, request, send_from_directory
+from flask_login import login_required
 from sqlalchemy import text
 
 from app import app, db
 from app.forms import ContractAdd, TransactionMoneyForm, ContractEditInfo, ContractEditFile, AdditionalAgreementForm
 from app.models import Partner, Category, Contract, TransactionMoney, AdditionalAgreement
-from .download_config import ContractFile, AdditionalAgreementFile
+from .download_config import ContractDownloader, AdditionalAgreementDownloader
 from .template_utils import template_bool_color
 
 
 @app.route('/contract_list')
 def contract_list():
     return render_template('contract/contract_list.html',
-                           contract_list=Contract.query.order_by(text('data_start DESC')).all())
+                           contract_list=Contract.query.order_by(text('data_start DESC')).
+                           filter_by(current_status=True).all())
+
+
+@app.route('/contract_archive_list')
+def contract_archive_list():
+    return render_template('contract/contract_list.html',
+                           contract_list=Contract.query.order_by(text('data_start DESC')).
+                           filter_by(current_status=False).all())
 
 
 @app.route('/contract_add', methods=['POST', 'GET'])
+@login_required
 def contract_add():
     form = ContractAdd()
     if form.validate_on_submit():
@@ -33,8 +41,8 @@ def contract_add():
                             category_id=Category.query.filter_by(name=form.category_id.data).first().id,
                             partner_id=Partner.query.filter_by(name=form.partner_id.data).first().id,
                             comment=form.comment.data)
-        downloader = ContractFile()
-        downloader.save_and_rename(contract, file)
+        downloader = ContractDownloader(contract)
+        downloader.save_and_rename(file)
 
         db.session.add(contract)
         db.session.commit()
@@ -44,6 +52,7 @@ def contract_add():
 
 
 @app.route('/contract_edit/<id>', methods=['POST', 'GET'])
+@login_required
 def contract_edit(id):
     contract = Contract.query.get(id)
     form = ContractEditInfo(
@@ -85,16 +94,17 @@ def contract_check(id):
 
 
 @app.route('/contract_edit_file/<id>', methods=['POST', 'GET'])
+@login_required
 def contract_edit_file(id):
     contract = Contract.query.get(id)
-    downloader = ContractFile()
+    downloader = ContractDownloader(contract)
     form = ContractEditFile()
 
     if form.validate_on_submit():
         new_file = form.file_path.data
-        downloader.delete(contract)
-        downloader.save_and_rename(contract,new_file)
-        downloader.update_path(contract,new_file)
+        downloader.delete()
+        downloader.save_and_rename(new_file)
+        downloader.update_path(new_file)
 
         db.session.add(contract)
         db.session.commit()
@@ -105,12 +115,13 @@ def contract_edit_file(id):
 
 
 @app.route('/contract_delete/<id>', methods=['POST', 'GET'])
+@login_required
 def contract_delete(id):
     contract = Contract.query.get(id)
-    downloader = ContractFile()
+    downloader = ContractDownloader(contract)
 
     if request.method == "POST":
-        downloader.delete(contract)
+        downloader.delete()
 
         db.session.delete(contract)
         db.session.commit()
@@ -133,15 +144,16 @@ def contract(id):
 
 
 @app.route('/download_file/<number>')
-def download_file(number):
+def download_contract_file(number):
     contract = Contract.query.filter_by(number=number).first()
-    downloader = ContractFile()
-    directory = downloader.get_data_for_download(contract)[0]
-    path = downloader.get_data_for_download(contract)[1]
+    downloader = ContractDownloader(contract)
+    directory = downloader.get_data_for_download()[0]
+    path = downloader.get_data_for_download()[1]
     return send_from_directory(directory=directory, path=path, as_attachment=True)
 
 
 @app.route('/contract/<id>/add_transaction', methods=['POST', ])
+@login_required
 def add_transaction(id):
     contract = Contract.query.get(id)
     form = TransactionMoneyForm()
@@ -162,6 +174,7 @@ def add_transaction(id):
 
 
 @app.route('/contract/<id>/delete_transaction/<trans_id>')
+@login_required
 def delete_transaction(id, trans_id):
     contract = Contract.query.get(id)
     transaction = TransactionMoney.query.get(trans_id)
@@ -173,6 +186,7 @@ def delete_transaction(id, trans_id):
 
 
 @app.route('/<contract_id>/additional_agreement_add', methods=['POST', 'GET'])
+@login_required
 def additional_agreement_add(contract_id):
     form = AdditionalAgreementForm()
     contract = Contract.query.get(contract_id)
@@ -185,8 +199,8 @@ def additional_agreement_add(contract_id):
         db.session.add(additional_agreement)
         db.session.commit()
         """save file"""
-        downloader = AdditionalAgreementFile(contract)
-        downloader.save_and_rename(additional_agreement, file)
+        downloader = AdditionalAgreementDownloader(contract, additional_agreement)
+        downloader.save_and_rename(file)
         """update contract"""
         contract.additional_agreements_exists = True
 
@@ -198,19 +212,21 @@ def additional_agreement_add(contract_id):
 
 
 @app.route('/<contract_id>/additional_agreement_delete/<id>', methods=['POST', 'GET'])
+@login_required
 def additional_agreement_delete(contract_id, id):
     contract = Contract.query.get(contract_id)
-    downloader = AdditionalAgreementFile(contract)
+    additional_agreement = AdditionalAgreement.query.get(id)
+    downloader = AdditionalAgreementDownloader(contract, additional_agreement)
 
     if request.method == "POST":
-        additional_agreement = AdditionalAgreement.query.get(id)
-        downloader.delete(additional_agreement)
+        downloader.delete()
         db.session.delete(additional_agreement)
         db.session.commit()
 
         contract.update_fields()
         db.session.add(contract)
         db.session.commit()
+
         return redirect(url_for('contract', id=contract_id))
 
     return render_template('contract/contract_delete.html')
@@ -220,7 +236,10 @@ def additional_agreement_delete(contract_id, id):
 def download_additional_agreement_file(contract_id, id):
     additional_agreement = AdditionalAgreement.query.get(id)
     contract = Contract.query.get(contract_id)
-    downloader = AdditionalAgreementFile(contract)
-    directory = downloader.get_data_for_download(contract, additional_agreement)[0]
-    path = downloader.get_data_for_download(contract, additional_agreement)[1]
-    return send_from_directory(directory=directory, path=path, as_attachment=True)
+    try:
+        downloader = AdditionalAgreementDownloader(contract, additional_agreement)
+        directory = downloader.get_data_for_download()[0]
+        path = downloader.get_data_for_download()[1]
+        return send_from_directory(directory=directory, path=path, as_attachment=True)
+    except:
+        return 'Файл не найден'

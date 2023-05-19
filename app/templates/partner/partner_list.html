@@ -6,15 +6,13 @@
 <a class="btn btn-light mt-2" href="{{ url_for('partner_form') }}" role="button">+ контрагент</a>
 
 
-
-<div class="row">
-    {% for partner in partners %}
-    <div class="col-2">
-        <a href="{{ url_for('partner', id = partner.id)}}">{{partner.name}}</a>
-    </div>
-    {% endfor %}
+{% for partner in partner_list %}
+<div class="col">
+    <a href="{{ url_for('partner', id = partner.id)}}">{{partner.name}}</a>
 </div>
+{% endfor %}
 
+</div>
 
 
 {% endblock content %}

@@ -3,16 +3,17 @@
 
 {% block content %}
 <a class="btn btn-light mt-2" href="{{ url_for('contract_add') }}" role="button">+ договор</a>
+<a class="btn btn-light mt-2" href="{{ url_for('contract_archive_list') }}" role="button">архив</a>
 
 
+{% for contract in contract_list %}
 <div class="row mt-3">
-
-    {% for contract in contract_list %}
-    <div class="col-3">
-        <a href="{{ url_for('contract', id = contract.id)}}">{{contract.number}} - {{contract.partner}} </a>
+    <div class="col">
+        <a href="{{ url_for('partner', id = contract.partner_id) }}">{{contract.partner.name}}</a>
+        <a href="{{ url_for('contract', id = contract.id)}}">{{contract.number}}</a>
+        {{contract.data_start}} - {{contract.data_finish}} {{contract.amount_money}}
+        <a href="{{ url_for('download_contract_file', number = contract.number) }}">скачать</a>
     </div>
-    {% endfor %}
-
 </div>
-
+{% endfor %}
 {% endblock content %}

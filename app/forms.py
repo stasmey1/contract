@@ -11,8 +11,8 @@ from wtforms import (
     DateField, FloatField
 )
 
-from .constants import NDSRate
-from .models import Category, Partner
+
+from .models import Category, Partner, NDSRate
 from .utils import get_models_for_form
 
 

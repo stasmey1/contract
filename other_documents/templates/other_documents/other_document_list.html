@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<a href="{{url_for('other_documents.add')}}"> + документ </a>
+
+
+{% for document in other_document_list %}
+<p>
+    {{document}}
+    <a href="{{ url_for('other_documents.download', id = document.id)}}"> скачать</a>
+    /
+    <a href="{{ url_for('other_documents.delete', id = document.id)}}"> удалить</a>
+
+    {% if document.comment %}
+    {{document.comment}}
+    {% endif %}
+</p>
+{% endfor %}
+
+
+{% endblock content %}

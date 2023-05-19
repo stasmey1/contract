@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<h1>Добавить документ</h1>
+
+    {% if form.errors %}
+    {% for error in form.errors.values() %}
+    <p style="color: red">{{ ''.join(error) }}</p>
+    {% endfor %}
+    {% endif %}
+
+<div class="col-4">
+    <form method='post' enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <p>{{form.name.label(class="form-label")}}  {{form.name(class="form-control")}}</p>
+        <p>{{form.file_path.label(class="form-label")}}  {{form.file_path(class="form-control")}}</p>
+        <p>{{form.comment.label(class="form-label")}}  {{form.comment(class="form-control")}}</p>
+        {{form.submit(class="btn btn-primary")}}
+    </form>
+</div>
+
+
+{% endblock content %}

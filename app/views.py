@@ -1,8 +1,24 @@
+from flask_login import login_required
+
 from app import app, db
-from flask import render_template, redirect, url_for
+from flask import render_template, redirect, url_for, request, flash
 
 from .forms import PartnerForm, CategoryForm
-from .models import Partner, Category
+from .models import Partner, Category, Contract
+from .utils import get_search_name_list
+
+
+@app.post('/search')
+def search():
+    partner_name_list = get_search_name_list(request)
+    search_partner = db.session.query(Partner).filter(Partner.name.in_(partner_name_list)).first()
+    contract_list = Contract.query.filter_by(partner=search_partner).all()
+
+    if not contract_list:
+        flash('Контрагент не найден')
+        return redirect(url_for('index'))
+
+    return render_template('contract/contract_list.html', contract_list=contract_list)
 
 
 @app.route('/')
@@ -11,6 +27,7 @@ def index():
 
 
 @app.route('/category_form', methods=['POST', 'GET'])
+@login_required
 def category_form():
     form = CategoryForm()
     if form.validate_on_submit():
@@ -29,10 +46,13 @@ def category_list():
 
 @app.route('/category/<id>')
 def category(id):
-    return render_template('category/category.html', category=Category.query.get(id))
+    category = Category.query.get(id)
+    contract_list = Contract.query.filter_by(category=category).all()
+    return render_template('contract/contract_list.html', contract_list=contract_list)
 
 
 @app.route('/partner_form', methods=['POST', 'GET'])
+@login_required
 def partner_form():
     form = PartnerForm()
     if form.validate_on_submit():
@@ -52,9 +72,11 @@ def partner_form():
 
 @app.route('/partner/<id>')
 def partner(id):
-    return render_template('partner/partner.html', partner=Partner.query.get(id))
+    partner = Partner.query.get(id)
+    contract_list = Contract.query.filter_by(partner=partner).all()
+    return render_template('contract/contract_list.html', contract_list=contract_list)
 
 
 @app.route('/partner_list')
 def partner_list():
-    return render_template('partner/partner_list.html', partners=Partner.query.all())
+    return render_template('partner/partner_list.html', partner_list=Partner.query.all())

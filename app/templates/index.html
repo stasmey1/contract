@@ -5,48 +5,65 @@
 
 
 <div class="row">
-    {% for category in category_list %}
-    <div class="col-4">
-        <a href="{{url_for('category', id = category.id)}}">
+    <div class="col-9">
+        <div class="row">
 
 
-            <div class="card mb-3 mt-3">
-                <div class="row g-0">
-                    <div class="col-md-4">
-                        <img src={{category.image_url}} class="img-fluid rounded-start m-2" style="height:100px" alt="...">
+            {% for category in category_list %}
+            <div class="col">
+                <a href="{{url_for('category', id = category.id)}}">
+
+
+                    <div class="card mb-3 mt-3">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src={{category.image_url}} class="img-fluid rounded-start m-2" style="height:100px"
+                                     alt="...">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{category.name}}</h5>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-8">
+
+
+                </a>
+                {% for contract in category.contracts %}
+                <a href="{{ url_for('contract', id = contract.id)}}">
+                    <div class="card mt-3">
                         <div class="card-body">
-                            <h5 class="card-title">{{category.name}}</h5>
+                            <div class="row">
+                                <div class="col-2">
+                                    {{contract.number}}
+                                </div>
+                                <div class="col">
+                                    {{contract.partner.name}}
+                                </div>
+                                <div class="col-4">
+                                    {{contract.amount_money}}
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </a>
+                {% endfor %}
             </div>
-
-
-        </a>
-        {% for contract in category.contracts %}
-        <a href="{{ url_for('contract', id = contract.id)}}">
-            <div class="card mt-3">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-2">
-                            {{contract.number}}
-                        </div>
-                        <div class="col">
-                            {{contract.partner.name}}
-                        </div>
-                        <div class="col-4">
-                            {{contract.amount_money}}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </a>
-        {% endfor %}
-
+            {% endfor %}
+        </div>
     </div>
-    {% endfor %}
+
+    <div class="col mt-3">
+        <form action="{{ url_for('search')}}" method="post">
+            <input type="text" name="search_partner" class="form-control">
+            <input type="submit" value="найти" class="btn btn-primary mt-3">
+        </form>
+        {% for msg in get_flashed_messages() %}
+        <p>{{msg}}</p>
+        {% endfor %}
+    </div>
+
 </div>
 
 

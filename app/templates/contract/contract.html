@@ -58,7 +58,7 @@
         <div class="col mt-2">
             <a class="btn btn-light" href="{{ url_for('contract_edit_file', id = contract.id) }}" role="button">Изменить
                 файл</a>
-            <a class="btn btn-light" href="{{ url_for('download_file', number = contract.number) }}"
+            <a class="btn btn-light" href="{{ url_for('download_contract_file', number = contract.number) }}"
                role="button">Скачать</a>
         </div>
 

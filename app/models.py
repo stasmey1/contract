@@ -1,12 +1,13 @@
 import datetime
 from enum import Enum
-
 from app import app, db
+
+MY_COMPANY = 'АО "СПЕЦАВТОБАЗА №1"'
 
 
 def get_my_company():
     with app.app_context():
-        return MyCompany.query.filter_by(name='АО "СПЕЦАВТОБАЗА №1"').first()
+        return MyCompany.query.filter_by(name=MY_COMPANY).first()
 
 
 class NDSRate(Enum):

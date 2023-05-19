@@ -2,28 +2,104 @@
 
 {% block content %}
 
-{% if form.errors %}
-{% for error in form.errors.values() %}
-<p style="color: red">{{ ''.join(error) }}</p>
-{% endfor %}
-{% endif %}
+<div class="col-8">
+
+    <form action="" method='post'>
+        {{ form.csrf_token }}
+
+        <div class="row mt-2">
+            <div class="col-2">
+                {{form.number.label(class="form-label")}}
+            </div>
+            <div class="col">
+                {{form.number(class="form-control")}}
+            </div>
+        </div>
 
 
+        <div class="row mt-2">
+            <div class="col-2">
+                {{form.data_start.label(class="form-label")}}
+            </div>
+            <div class="col">
+                {{form.data_start(class="form-control")}}
+            </div>
+        </div>
 
-<form action="" method='post'>
-    {{ form.csrf_token }}
-    <p>{{form.number.label}} - {{form.number}}</p>
-    <p>{{form.data_start.label}} - {{form.data_start}}</p>
-    <p>{{form.data_finish.label}} - {{form.data_finish}}</p>
-    <p>{{form.auto_renewal.label}} - {{form.auto_renewal}}</p>
-    <p>{{form.tender.label}} - {{form.tender}}</p>
-    <p>{{form.amount_money.label}} - {{form.amount_money}}</p>
-    <p>{{form.nds.label}} - {{form.nds}}</p>
-    <p>{{form.nds_percent.label}} - {{form.nds_percent}}</p>
-    <p>{{form.comment.label}} - {{form.comment}}</p>
-    {{form.submit}}
-</form>
+        <div class="row mt-2">
+            <div class="col-2">
+                {{form.data_finish.label(class="form-label")}}
+            </div>
+            <div class="col">
+                {{form.data_finish(class="form-control")}}
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-2">
+                {{form.auto_renewal.label(class="form-label")}}
+            </div>
+            <div class="col">
+                {{form.auto_renewal(class="form-checkbox")}}
+            </div>
+        </div>
 
 
+        <div class="row mt-2">
+            <div class="col-2">
+                {{form.tender.label(class="form-label")}}
+            </div>
+            <div class="col">
+                {{form.tender(class="form-checkbox")}}
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-2">
+                {{form.amount_money.label(class="form-label")}}
+            </div>
+            <div class="col">
+                {{form.amount_money(class="form-control")}}
+            </div>
+        </div>
+
+
+        <div class="row mt-2">
+            <div class="col-2">
+                {{form.nds.label(class="form-label")}}
+            </div>
+            <div class="col">
+                {{form.nds(class="form-checkbox")}}
+            </div>
+        </div>
+
+
+        <div class="row mt-2">
+            <div class="col-2">
+                {{form.nds_percent.label(class="form-label")}}
+            </div>
+            <div class="col">
+                {{form.nds_percent(class="form-control")}}
+            </div>
+        </div>
+
+
+        <div class="row mt-2">
+            <div class="col-2">
+                {{form.comment.label(class="form-label")}}
+            </div>
+            <div class="col">
+                {{form.comment(class="form-control")}}
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-2">
+                {{form.submit(class="btn btn-primary")}}
+            </div>
+        </div>
+
+    </form>
+</div>
 
 {% endblock content %}
